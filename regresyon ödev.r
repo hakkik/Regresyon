@@ -22,6 +22,9 @@ qqnorm(verim)
 qqline(verim)
 shapiro.test(verim)
 
+#Kolmogorov-swirnov testi
+ks.test(verim, "pnorm", mean = mean(verim), sd = sd(verim))
+
 #log dönüşümü yaparak tekrar kontrol ediyoruz yine sağlamıyor
 lnverim=log(verim)
 qqnorm(lnverim)
@@ -58,6 +61,11 @@ qqnorm(verim)
 qqline(verim)
 shapiro.test(verim)
 
+lnverim=log(verim)
+qqnorm(lnverim)
+qqline(lnverim)
+shapiro.test(lnverim)
+
 #yeni verimize karekök dönüşümü yapıyoruz sağlıyor artık
 verim_kok = verim -min(verim) +1
 sqrt_verim=sqrt(verim_kok)
@@ -85,8 +93,8 @@ n=74
 k=5
 
 #k yı bulma kodu
-toplam_katsayi <- length(coef(model))
-k <- toplam_katsayi - 1
+toplam_katsayi = length(coef(model))
+k = toplam_katsayi - 1
 print(k)
 
 ## Artık İncelemesi ##
@@ -95,7 +103,7 @@ print(k)
 h1 = 2*(k+1)/n
 h1
 which(inf$hat> h1)
-hat<-inf$hat
+hat=inf$hat
 plot(hat, pch="*", cex=2, main="Leverage Value by Hat value")
 abline(h = 2*(k+1)/n , col="red")
 text(x=1:length(hat)+1, y=hat, labels=ifelse(hat>2*(k+1)/n,index(hat),""), col="red")
@@ -103,7 +111,7 @@ text(x=1:length(hat)+1, y=hat, labels=ifelse(hat>2*(k+1)/n,index(hat),""), col="
 #standart artiklar
 which(inf$std.res>2)
 which(inf$std.res<(-2))
-std<-inf$std.res
+std=inf$std.res
 plot(std, pch="*", cex=2, main="Outlier by Standardized residuals",ylab="Standardized Residuals", xlab="Index")
 abline(h = c(-2,2) ,col="red")
 text( x = 1:length(std), y = std,labels = ifelse(std < -2 | std > 2, 1:length(std), ""),col = "red", pos = 3 )
@@ -111,7 +119,7 @@ text( x = 1:length(std), y = std,labels = ifelse(std < -2 | std > 2, 1:length(st
 #student artiklar
 which(inf$stud.res>3)
 which(inf$stud.res<(-3))
-stud<-inf$stud.res
+stud=inf$stud.res
 plot(stud, pch="*", cex=2, main="Outlier by Studentized residuals",ylab="Studentized Residuals", xlab="Index")
 abline(h = c(-3,3) ,col="red")
 text(x = 1:length(stud),y= stud,labels = ifelse(stud < -3 | stud > 3, 1:length(stud), ""), col = "red", pos = 3)
@@ -120,7 +128,7 @@ text(x = 1:length(stud),y= stud,labels = ifelse(stud < -3 | stud > 3, 1:length(s
 h2 = 4/n
 h2
 which(inf$cooks>h2)
-cooksd <- cooks.distance(model)
+cooksd = cooks.distance(model)
 plot(cooksd, pch="*", cex=2, main="Influential Obs by Cooks distance")
 abline(h = if (n>50) 4/n else 4/(n-k-1) , col="red")
 text(x=1:length(cooksd)+1, y=cooksd, labels=ifelse(cooksd>if (n>50) 4/n else 4/(n-k-1),names(cooksd),""), col="red")
@@ -139,10 +147,16 @@ names(sonveri)=c("verim","isik","sicaklik","su","mineraller")
 names(sonveri)
 attach(sonveri)
 mineraller=as.factor(mineraller)
+basicStats(sonveri)
 
 qqnorm(verim)
 qqline(verim)
 shapiro.test(verim)
+
+lnverim=log(verim)
+qqnorm(lnverim)
+qqline(lnverim)
+shapiro.test(lnverim)
 
 verim_kok = verim -min(verim) +1
 sqrt_verim=sqrt(verim_kok)
@@ -150,15 +164,17 @@ qqnorm(sqrt_verim)
 qqline(sqrt_verim)
 shapiro.test(sqrt_verim)
 
-
+# doğrusallık
 data_birleşik=cbind(verim,isik,sicaklik,su,mineraller)
 pairs(data_birleşik)
 
+# yeni model
 yenimodel=lm(sqrt_verim~isik+sicaklik+su+mineraller) # yeni model
 yenimodel
 summary(yenimodel) # test istatistikleri
 
-confint(yenimodel, level=0.99) # güven aralıkları
+# güven aralıkları
+confint(yenimodel, level=0.99) 
 
 
 ### Varsayım Bozulumları ###
@@ -186,12 +202,16 @@ ols_eigen_cindex(yenimodel)
 
 
 ### Değişken Seçimi ###
+lm.null=lm(verim~1)
+forward=step(lm.null ,verim~isik+sicaklik+su+mineraller, direction = "forward")
+forward
+summary(forward)
+
 library(stats)
-boşmodel=lm(Üretim ~ 1)
-ileriye=step(boşmodel,Üretim~Kod+Test+Dizayn+Platform,  direction = "forward") #ileriye doğru seçim
+boşmodel=lm(sqrt_verim ~ 1)
+ileriye=step(sqrt_verim~isik+sicaklik+su+mineraller,  direction = "forward") #ileriye doğru seçim
 ileriye
 summary(ileriye)
-
 geriye=step(yenimodel, direction="backward") #geriye doğru seçim
 summary(geriye)
 
