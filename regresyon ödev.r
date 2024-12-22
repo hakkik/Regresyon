@@ -14,7 +14,7 @@ data=read.table("c:/file 42_2220381067_HakkiKondak.txt", header = T)
 names(data)
 names(data) = c("verim","isik","sicaklik","su","mineraller")
 attach(data)
-toprak_turu=as.factor(toprak_turu)
+toprak_turu=as.factor(mineraller)
 basicStats(data)
 
 #noramllik sağlıyor mu diye bakıyoruz sağlamıyor
@@ -43,8 +43,8 @@ boxplot(verim)
 which(verim %in% boxplot(verim) $out)
 
 #artık değerlerimizi çıkarıp yeni verimizi oluşturuyoruz
-data_aykirilar_silindi=data[-c(17 ,33, 46, 64 ,69 ,72), ]
-write.table(data_aykirilar_silindi,"sonveri.txt",row.names = FALSE)
+data_aykirilar_silindi=data[-c(17 ,33, 46, 64 ,69 ,72, 55,18), ]
+write.table(data_aykirilar_silindi,"sonveri3.txt",row.names = FALSE)
 
 #Environmentimizi temizliyoruz
 rm(list = ls())
@@ -61,6 +61,7 @@ qqnorm(verim)
 qqline(verim)
 shapiro.test(verim)
 
+#log dönüşümü
 lnverim=log(verim)
 qqnorm(lnverim)
 qqline(lnverim)
@@ -74,7 +75,7 @@ qqline(sqrt_verim)
 shapiro.test(sqrt_verim)
 
 # Doğrusallık
-data_birlestirme=cbind(verim,isik,sicaklik,su,mineraller)
+data_birlestirme=cbind(sqrt_verim,isik,sicaklik,su,mineraller)
 pairs(data_birlestirme)
 
 # Model
@@ -153,11 +154,13 @@ qqnorm(verim)
 qqline(verim)
 shapiro.test(verim)
 
+#log dönüşümü
 lnverim=log(verim)
-qqnorm(lnverim)
+qqnorm(lnverim) 
 qqline(lnverim)
 shapiro.test(lnverim)
 
+#karekök dönüşümü
 verim_kok = verim -min(verim) +1
 sqrt_verim=sqrt(verim_kok)
 qqnorm(sqrt_verim)
@@ -165,7 +168,7 @@ qqline(sqrt_verim)
 shapiro.test(sqrt_verim)
 
 # doğrusallık
-data_birleşik=cbind(verim,isik,sicaklik,su,mineraller)
+data_birleşik=cbind(sqrt_verim,isik,sicaklik,su,mineraller)
 pairs(data_birleşik)
 
 # yeni model
@@ -176,9 +179,7 @@ summary(yenimodel) # test istatistikleri
 # güven aralıkları
 confint(yenimodel, level=0.99) 
 
-
 ### Varsayım Bozulumları ###
-# Değişen Varyanslılık 
 inf=ls.diag(yenimodel)
 plot(predict(yenimodel),inf$stud.res,ylab="Student Tip Artıklar",xlab="Tahmin Değerleri") # grafik
 library(lmtest)
@@ -186,7 +187,6 @@ bptest(yenimodel) # Breusch-Pagan Testi
 summary(lm(abs(residuals(yenimodel))~fitted(yenimodel)))
 
 # Otokorelasyon 
-library(lmtest)
 dwtest(yenimodel)
 
 # Çoklu Bağlantı 
@@ -195,36 +195,66 @@ inf
 library(DAAG)
 detach("package:car", unload=TRUE)
 vif(yenimodel) #vif için 1.yol
-library(olsrr) 
 ols_vif_tol(yenimodel) #vif için 2.yol
-library(olsrr)
 ols_eigen_cindex(yenimodel)
 
+dummy=dummy_cols(mineraller)
+mineraller1=dummy$.data_1
+mineraller2=dummy$.data_2
+mineraller3=dummy$.data_3
 
-### Değişken Seçimi ###
-lm.null=lm(verim~1)
-forward=step(lm.null ,verim~isik+sicaklik+su+mineraller, direction = "forward")
+ort1=mean(isik)
+kt1=sum((isik-ort1)^2)
+skx1=(isik-ort1)/(kt1^0.5)
+ort2=mean(sicaklik)
+kt2=sum((sicaklik-ort2)^2)
+skx2=(sicaklik-ort2)/(kt2^0.5)
+ort3=mean(su)
+kt3=sum((su-ort3)^2)
+skx3=(su-ort3)/(kt3^0.5)
+ort42=mean(mineraller2)
+kt42=sum((mineraller2-ort42)^2)
+skx42=(mineraller2-ort42)/(kt42^0.5)
+ort43=mean(mineraller3)
+kt43=sum((mineraller3-ort43)^2)
+skx43=(mineraller3-ort43)/(kt43^0.5)
+x=cbind(skx1,skx2,skx3,skx42,skx43)
+sm=eigen(t(x)%*%x)
+signif(sm$values,3)
+signif(sm$vectors,3)
+
+#uyum kestirimi veri2 ilk degeri 
+uyum = lm(sqrt_verim~isik+sicaklik+su+mineraller)
+new = data.frame(isik=c(4.10),sicaklik=c(1.18),su=c(7.91),mineraller=factor(c(1)))
+predict(uyum, newdata = new)
+guven=predict(uyum, newdata=new,interval="confidence",level=0.95) #guven aral??g?? bulma
+print(guven)
+
+#on kestirim
+onkes = lm(sqrt_verim~isik+sicaklik+su+mineraller)
+new2 = data.frame(isik=c(5.86),sicaklik=c(2.71),su=c(7.49),mineraller=factor(c(1)))
+predict(onkes, newdata = new2)
+guven2=predict(onkes, newdata=new2 ,interval="confidence",level=0.95)
+print(guven2)
+
+#ileriye dogru secilim
+lm.null = lm(sqrt_verim ~ 1)
+forward = step(lm.null,sqrt_verim~isik+sicaklik+su+mineraller,  direction = "forward")
 forward
 summary(forward)
 
-library(stats)
-boşmodel=lm(sqrt_verim ~ 1)
-ileriye=step(sqrt_verim~isik+sicaklik+su+mineraller,  direction = "forward") #ileriye doğru seçim
-ileriye
-summary(ileriye)
-geriye=step(yenimodel, direction="backward") #geriye doğru seçim
-summary(geriye)
+#geriye dogru secilim
+backward=step(yenimodel,direction="backward")
+summary(backward)
 
-library(MASS)
-adımsal=stepAIC(yenimodel, direction = "both", trace = FALSE) #adımsal seçim
-summary(adımsal)
+#adimsal secilim
+step.model = stepAIC(yenimodel, direction = "both", trace = FALSE)
+summary(step.model)
 
-
-### Ridge Regresyon ###
-library(MASS)
-ridge=lm.ridge(Üretim~Kod+Test+Dizayn+Platform ,lambda = seq(0,1,0.05))
+#ridge
+ridge = lm.ridge(sqrt_verim~isik+sicaklik+su+mineraller ,lambda = seq(0,1,0.05))
 matplot(ridge$lambda,t(ridge$coef),type="l",xlab=expression(lambda),ylab=expression(hat(beta)))
 abline(h=0,lwd=2)
 ridge$coef
 select(ridge)
-ridge$coef[,ridge$lam == 0.4]
+ridge$coef[,ridge$lam == 0]
