@@ -135,15 +135,15 @@ abline(h = if (n>50) 4/n else 4/(n-k-1) , col="red")
 text(x=1:length(cooksd)+1, y=cooksd, labels=ifelse(cooksd>if (n>50) 4/n else 4/(n-k-1),names(cooksd),""), col="red")
 
 # Aykırı Değerlerin Çıkartılması ve yeni verinin oluşturulması
-data_aykırılar_silindi2=data2[-c(17, 19, 20, 21,22,23,24,8,52), ]
-write.table(data_aykırılar_silindi2,"sonveri2.txt",row.names=FALSE)
+data_aykırılar_silindi2=data2[-c(17, 20, 21, 22, 23, 24, 19, 28, 38, 45, 51, 54, 62, 64, 84 ,52), ]
+write.table(data_aykırılar_silindi2,"sonveri3.txt",row.names=FALSE)
 
 ### Modelin Yeniden Kurulması ###           
 
 #BAŞLAMADAN ÖNCE WORKSPACE'i TEMİZLEYİN
 rm(list=ls())  
 
-sonveri=read.table("c:/sonveri2.txt",header = T)
+sonveri=read.table("c:/sonveri3.txt",header = T)
 names(sonveri)=c("verim","isik","sicaklik","su","mineraller")
 names(sonveri)
 attach(sonveri)
@@ -179,12 +179,59 @@ summary(yenimodel) # test istatistikleri
 # güven aralıkları
 confint(yenimodel, level=0.99) 
 
+# Artık İncelemesi
+inf=ls.diag(yenimodel)
+inf
+influence.measures(yenimodel)
+n=59
+k=5
+
+#k yı bulma kodu
+toplam_katsayi = length(coef(yenimodel))
+k = toplam_katsayi - 1
+print(k)
+
+## Artık İncelemesi ##
+
+h1 = 2*(k+1)/n
+h1
+which(inf$hat> h1)
+hat=inf$hat
+plot(hat, pch="*", cex=2, main="Leverage Value by Hat value")
+abline(h = 2*(k+1)/n , col="red")
+text(x=1:length(hat)+1, y=hat, labels=ifelse(hat>2*(k+1)/n,index(hat),""), col="red")
+
+#standart artiklar
+which(inf$std.res>2)
+which(inf$std.res<(-2))
+std=inf$std.res
+plot(std, pch="*", cex=2, main="Outlier by Standardized residuals",ylab="Standardized Residuals", xlab="Index")
+abline(h = c(-2,2) ,col="red")
+text( x = 1:length(std), y = std,labels = ifelse(std < -2 | std > 2, 1:length(std), ""),col = "red", pos = 3 )
+
+#student artiklar
+which(inf$stud.res>3)
+which(inf$stud.res<(-3))
+stud=inf$stud.res
+plot(stud, pch="*", cex=2, main="Outlier by Studentized residuals",ylab="Studentized Residuals", xlab="Index")
+abline(h = c(-3,3) ,col="red")
+text(x = 1:length(stud),y= stud,labels = ifelse(stud < -3 | stud > 3, 1:length(stud), ""), col = "red", pos = 3)
+
+#cook uzakligi
+h2 = 4/n
+h2
+which(inf$cooks>h2)
+cooksd = cooks.distance(yenimodel)
+plot(cooksd, pch="*", cex=2, main="Influential Obs by Cooks distance")
+abline(h = if (n>50) 4/n else 4/(n-k-1) , col="red")
+text(x=1:length(cooksd)+1, y=cooksd, labels=ifelse(cooksd>if (n>50) 4/n else 4/(n-k-1),names(cooksd),""), col="red")
+
 ### Varsayım Bozulumları ###
 inf=ls.diag(yenimodel)
 plot(predict(yenimodel),inf$stud.res,ylab="Student Tip Artıklar",xlab="Tahmin Değerleri") # grafik
 library(lmtest)
 bptest(yenimodel) # Breusch-Pagan Testi
-summary(lm(abs(residuals(yenimodel))~fitted(yenimodel)))
+ summary(lm(abs(residuals(yenimodel))~fitted(yenimodel)))
 
 # Otokorelasyon 
 dwtest(yenimodel)
@@ -253,7 +300,7 @@ summary(step.model)
 
 #ridge
 ridge = lm.ridge(sqrt_verim~isik+sicaklik+su+mineraller ,lambda = seq(0,1,0.05))
-matplot(ridge$lambda,t(ridge$coef),type="l",xlab=expression(lambda),ylab=expression(hat(beta)))
+matplot(ridge$lambda,t(ridge$coef),type="l",xlab=expression(lambda),ylab=expression(h=0,lwd=2))
 abline(h=0,lwd=2)
 ridge$coef
 select(ridge)
