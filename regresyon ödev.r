@@ -10,7 +10,7 @@ library(fastDummies)
 library(DAAG)
 
 #datamızı çekiyoruz
-data=read.table("c:/file 42_2220381067_HakkiKondak.txt", header = T)
+data=read.table("c:/2220381067_HakkiKondak.txt", header = T)
 names(data)
 names(data) = c("verim","isik","sicaklik","su","mineraller")
 attach(data)
@@ -43,14 +43,14 @@ boxplot(verim)
 which(verim %in% boxplot(verim) $out)
 
 #artık değerlerimizi çıkarıp yeni verimizi oluşturuyoruz
-data_aykirilar_silindi=data[-c(17 ,33, 46, 64 ,69 ,72, 55,18), ]
-write.table(data_aykirilar_silindi,"sonveri3.txt",row.names = FALSE)
+data_aykirilar_silindi=data[-c(17 ,33, 46, 64 ,69 ,72), ]
+write.table(data_aykirilar_silindi,"sonveri.txt",row.names = FALSE)
 
 #Environmentimizi temizliyoruz
 rm(list = ls())
 
 #yeni verimizi çekiyoruz
-data2=read.table("c:/sonveri.txt",header = T)
+data2=read.table("c:/2220381067_HakkiKondak(1).txt",header = T)
 names(data2) = c("verim","isik","sicaklik","su","mineraller")
 attach(data2)
 mineraller=as.factor(mineraller)
@@ -135,7 +135,7 @@ abline(h = if (n>50) 4/n else 4/(n-k-1) , col="red")
 text(x=1:length(cooksd)+1, y=cooksd, labels=ifelse(cooksd>if (n>50) 4/n else 4/(n-k-1),names(cooksd),""), col="red")
 
 # Aykırı Değerlerin Çıkartılması ve yeni verinin oluşturulması
-data_aykırılar_silindi2=data2[-c(17, 20, 21, 22, 23, 24, 19, 28, 38, 45, 51, 54, 62, 64, 84 ,52), ]
+data_aykırılar_silindi2=data2[-c(8,17,52, 20,21,22,23,24,19), ]
 write.table(data_aykırılar_silindi2,"sonveri3.txt",row.names=FALSE)
 
 ### Modelin Yeniden Kurulması ###           
@@ -143,7 +143,7 @@ write.table(data_aykırılar_silindi2,"sonveri3.txt",row.names=FALSE)
 #BAŞLAMADAN ÖNCE WORKSPACE'i TEMİZLEYİN
 rm(list=ls())  
 
-sonveri=read.table("c:/sonveri3.txt",header = T)
+sonveri=read.table("c:/2220381067_HakkiKondak(2).txt",header = T)
 names(sonveri)=c("verim","isik","sicaklik","su","mineraller")
 names(sonveri)
 attach(sonveri)
@@ -183,7 +183,7 @@ confint(yenimodel, level=0.99)
 inf=ls.diag(yenimodel)
 inf
 influence.measures(yenimodel)
-n=59
+n=65
 k=5
 
 #k yı bulma kodu
@@ -229,7 +229,6 @@ text(x=1:length(cooksd)+1, y=cooksd, labels=ifelse(cooksd>if (n>50) 4/n else 4/(
 ### Varsayım Bozulumları ###
 inf=ls.diag(yenimodel)
 plot(predict(yenimodel),inf$stud.res,ylab="Student Tip Artıklar",xlab="Tahmin Değerleri") # grafik
-library(lmtest)
 bptest(yenimodel) # Breusch-Pagan Testi
  summary(lm(abs(residuals(yenimodel))~fitted(yenimodel)))
 
@@ -239,7 +238,6 @@ dwtest(yenimodel)
 # Çoklu Bağlantı 
 inf=ls.diag(yenimodel)
 inf
-library(DAAG)
 detach("package:car", unload=TRUE)
 vif(yenimodel) #vif için 1.yol
 ols_vif_tol(yenimodel) #vif için 2.yol
@@ -279,7 +277,7 @@ print(guven)
 
 #on kestirim
 onkes = lm(sqrt_verim~isik+sicaklik+su+mineraller)
-new2 = data.frame(isik=c(5.86),sicaklik=c(2.71),su=c(7.49),mineraller=factor(c(1)))
+new2 = data.frame(isik=c(5.86),sicaklik=c(2.71),su=c(7.49),mineraller=factor(c(2)))
 predict(onkes, newdata = new2)
 guven2=predict(onkes, newdata=new2 ,interval="confidence",level=0.95)
 print(guven2)
