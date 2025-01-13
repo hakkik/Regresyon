@@ -1,47 +1,80 @@
-# Regression Analysis Assignment
+# Regresyon Analizi Projesi
 
-This project involves the completion of a regression analysis assignment using the R programming language. The study includes data analysis using various transformations and modeling techniques.
+Bu proje, tarımsal verim üzerinde çeşitli faktörlerin etkisini analiz eden kapsamlı bir regresyon analizi çalışmasıdır. Işık, sıcaklık, su ve mineral seviyelerinin bitki verimi üzerindeki etkilerini incelemektedir.
 
-## Packages Used
-- `car`
-- `fBasics`
-- `lmtest`
-- `MASS`
-- `nortest`
-- `olsrr`
-- `stats`
-- `zoo`
-- `fastDummies`
-- `DAAG`
+## İçerik
 
-## Steps
+- Veri normallik analizi
+- Aykırı değer tespiti ve temizleme
+- Çoklu regresyon modeli oluşturma
+- Model varsayımlarının kontrolü
+- Ridge regresyon analizi
+- İleriye/geriye dönük değişken seçimi
 
-1. **Data Loading and Cleaning**:
-   - Data was loaded using the `read.table()` function, and variable names were renamed.
-   - Outliers were detected and cleaned using the `boxplot()` and `which()` functions.
+## Kullanılan Kütüphaneler
 
-2. **Normality Tests**:
-   - Normality tests were performed using `shapiro.test()` and `ks.test()`.
-   - Data transformations (logarithmic and square root transformations) were attempted.
+```R
+library(car)
+library(fBasics)
+library(lmtest)
+library(MASS)
+library(nortest)
+library(olsrr)
+library(stats)
+library(zoo)
+library(fastDummies)
+library(DAAG)
+```
 
-3. **Modeling**:
-   - Regression models were created using the `lm()` function.
-   - Model statistics and confidence intervals were examined.
-   - Model assumptions were tested using `bptest()` and `dwtest()`.
+## Analiz Adımları
 
-4. **Model Selection and Adjustments**:
-   - Forward, backward, and stepwise model selection was performed using `step()` and `stepAIC()`.
-   - Ridge regression was applied using the `lm.ridge()` function.
+1. **Veri Ön İşleme**
+   - Veri normallik kontrolü
+   - Log ve karekök dönüşümleri
+   - Aykırı değerlerin tespiti ve çıkarılması
 
-## Files
-- `2220381067_HakkiKondak.txt`: The initial dataset.
-- `2220381067_HakkiKondak(1).txt`: The dataset after removing outliers.
-- `2220381067_HakkiKondak(2).txt`: The final dataset.
+2. **Model Oluşturma**
+   - Çoklu regresyon modeli kurulumu
+   - Model varsayımlarının kontrolü
+   - Güven aralıklarının hesaplanması
 
-## How to Run
-1. Open the project in R or RStudio.
-2. Install the necessary packages (using the `install.packages()` function).
-3. Run the `regresyon_odev.r` file to follow the steps.
+3. **Model Doğrulama**
+   - Artık analizi
+   - Cook's distance hesaplaması
+   - VIF değerlerinin kontrolü
+   - Otokorelasyon testi
 
-## Results
-- As a result of analyzing and modeling the data, it was observed that the data was made to conform to normality assumptions with certain transformations and analyzed using appropriate regression models.
+4. **Değişken Seçimi**
+   - İleriye doğru seçim
+   - Geriye doğru seçim
+   - Adımsal seçim
+   - Ridge regresyon
+
+## Kullanım
+
+1. Veri setinizi projenin ana dizinine yerleştirin
+2. Dosya yolunu kendi sisteminize göre güncelleyin:
+```R
+data=read.table("your_path/your_file.txt", header = T)
+```
+3. Kodu çalıştırın ve sonuçları analiz edin
+
+## Gereksinimler
+
+- R 4.0.0 veya üzeri
+- Yukarıda listelenen R paketleri
+
+## Önemli Notlar
+
+- Veri setinde aykırı değerler temizlenmiştir
+- Normallik varsayımı için karekök dönüşümü kullanılmıştır
+- Model seçimi için AIC kriteri kullanılmıştır
+
+## İletişim
+
+İsim: Hakkı Kondak
+Öğrenci Numarası: 2220381067
+
+## Lisans
+
+Bu proje MIT lisansı altında lisanslanmıştır.
