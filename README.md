@@ -1,17 +1,17 @@
-# Regresyon Analizi Projesi
+# Agricultural Yield Regression Analysis
 
-Bu proje, tarımsal verim üzerinde çeşitli faktörlerin etkisini analiz eden kapsamlı bir regresyon analizi çalışmasıdır. Işık, sıcaklık, su ve mineral seviyelerinin bitki verimi üzerindeki etkilerini incelemektedir.
+This project analyzes the effects of various environmental factors on agricultural yield using comprehensive regression analysis. The study examines how light, temperature, water, and mineral levels influence plant yield.
 
-## İçerik
+## Overview
 
-- Veri normallik analizi
-- Aykırı değer tespiti ve temizleme
-- Çoklu regresyon modeli oluşturma
-- Model varsayımlarının kontrolü
-- Ridge regresyon analizi
-- İleriye/geriye dönük değişken seçimi
+- Normality analysis of data
+- Outlier detection and cleaning
+- Multiple regression model creation
+- Model assumptions verification
+- Ridge regression analysis
+- Forward/backward variable selection
 
-## Kullanılan Kütüphaneler
+## Required Libraries
 
 ```R
 library(car)
@@ -26,55 +26,81 @@ library(fastDummies)
 library(DAAG)
 ```
 
-## Analiz Adımları
+## Analysis Steps
 
-1. **Veri Ön İşleme**
-   - Veri normallik kontrolü
-   - Log ve karekök dönüşümleri
-   - Aykırı değerlerin tespiti ve çıkarılması
+1. **Data Preprocessing**
+   - Normality check
+   - Log and square root transformations
+   - Outlier detection and removal
 
-2. **Model Oluşturma**
-   - Çoklu regresyon modeli kurulumu
-   - Model varsayımlarının kontrolü
-   - Güven aralıklarının hesaplanması
+2. **Model Building**
+   - Multiple regression model setup
+   - Verification of model assumptions
+   - Calculation of confidence intervals
 
-3. **Model Doğrulama**
-   - Artık analizi
-   - Cook's distance hesaplaması
-   - VIF değerlerinin kontrolü
-   - Otokorelasyon testi
+3. **Model Validation**
+   - Residual analysis
+   - Cook's distance calculation
+   - VIF values check
+   - Autocorrelation testing
 
-4. **Değişken Seçimi**
-   - İleriye doğru seçim
-   - Geriye doğru seçim
-   - Adımsal seçim
-   - Ridge regresyon
+4. **Variable Selection**
+   - Forward selection
+   - Backward selection
+   - Stepwise selection
+   - Ridge regression
 
-## Kullanım
+## Usage
 
-1. Veri setinizi projenin ana dizinine yerleştirin
-2. Dosya yolunu kendi sisteminize göre güncelleyin:
+1. Place your dataset in the project's main directory
+2. Update the file path according to your system:
 ```R
 data=read.table("your_path/your_file.txt", header = T)
 ```
-3. Kodu çalıştırın ve sonuçları analiz edin
+3. Run the code and analyze the results
 
-## Gereksinimler
+## Requirements
 
-- R 4.0.0 veya üzeri
-- Yukarıda listelenen R paketleri
+- R 4.0.0 or higher
+- All R packages listed above
+- Input data in txt format with headers
 
-## Önemli Notlar
+## Key Features
 
-- Veri setinde aykırı değerler temizlenmiştir
-- Normallik varsayımı için karekök dönüşümü kullanılmıştır
-- Model seçimi için AIC kriteri kullanılmıştır
+- Outlier cleaning process
+- Square root transformation for normality
+- AIC criterion for model selection
+- Comprehensive residual analysis
+- Multiple variable selection methods
 
-## İletişim
+## Important Notes
 
-İsim: Hakkı Kondak
-Öğrenci Numarası: 2220381067
+- Dataset has been cleaned for outliers
+- Square root transformation was used for normality assumption
+- AIC criterion was used for model selection
+- VIF analysis included for multicollinearity check
 
-## Lisans
+## Results
 
-Bu proje MIT lisansı altında lisanslanmıştır.
+The analysis provides:
+- Optimal model selection
+- Confidence intervals for parameters
+- Residual diagnostics
+- Prediction capabilities
+- Variable importance assessment
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a new Pull Request
+
+## Project Structure
+
+```
+├── regression_analysis.R    # Main analysis script
+├── data.txt                # Input data
+└── README.md              # Project documentation
+```
