@@ -218,4 +218,4 @@ Analiz sonucunda:
 - Kod, öğretici/akademik amaçlıdır; üretim ortamı için doğrudan kullanılması önerilmez.
 - Dosya yolları Windows'a özgü (`c:/...`) yazıldığından macOS/Linux kullanıcılarının bu satırları güncellemesi gerekir.
 
-[@kullaniciadi](https://github.com/hakkik)
+(https://github.com/hakkik)
