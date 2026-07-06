@@ -218,4 +218,4 @@ Analiz sonucunda:
 - Kod, öğretici/akademik amaçlıdır; üretim ortamı için doğrudan kullanılması önerilmez.
 - Dosya yolları Windows'a özgü (`c:/...`) yazıldığından macOS/Linux kullanıcılarının bu satırları güncellemesi gerekir.
 
-[Hakkı Kondak] (https://github.com/hakkik)
+[Hakkı kondak](https://github.com/hakkik)
