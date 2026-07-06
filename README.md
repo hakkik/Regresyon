@@ -1,106 +1,219 @@
-# Agricultural Yield Regression Analysis
+# Regresyon: Tarımsal Verim Üzerine Çoklu Regresyon Analizi
 
-This project analyzes the effects of various environmental factors on agricultural yield using comprehensive regression analysis. The study examines how light, temperature, water, and mineral levels influence plant yield.
+Bu proje, ışık, sıcaklık, su ve mineral seviyelerinin tarımsal verim üzerindeki etkisini incelemek için R dilinde yapılmış bir çoklu doğrusal regresyon çalışmasıdır. Proje kapsamında; veri temizleme, varsayım kontrolleri, aykırı değer analizi, model kurma ve değişken seçimi adımlarını uçtan uca içerir.
 
-## Overview
+## İçindekiler
 
-- Normality analysis of data
-- Outlier detection and cleaning
-- Multiple regression model creation
-- Model assumptions verification
-- Ridge regression analysis
-- Forward/backward variable selection
+- [Proje Hakkında](#proje-hakkında)
+- [Dosya Yapısı](#dosya-yapısı)
+- [Gereksinimler](#gereksinimler)
+- [Kurulum](#kurulum)
+- [Analiz Akışı](#analiz-akışı)
+- [Kullanım](#kullanım)
+- [Sonuçlar](#sonuçlar)
+- [Notlar](#notlar)
 
-## Required Libraries
+## Proje Hakkında
 
-```R
-library(car)
-library(fBasics)
-library(lmtest)
-library(MASS)
-library(nortest)
-library(olsrr)
-library(stats)
-library(zoo)
-library(fastDummies)
-library(DAAG)
+Veri setinde yer alan `verim` (bağımlı değişken), `isik`, `sicaklik`, `su` ve `mineraller` (bağımsız değişkenler) kullanılarak bir çoklu regresyon modeli kurulmuş; model varsayımları (normallik, doğrusallık, sabit varyans, otokorelasyon, çoklu bağlantı) test edilmiş ve aykırı gözlemler iki aşamada temizlenerek model iyileştirilmiştir.
+
+## Dosya Yapısı
+
+```
+├── regresyon ödev.r    # Ana analiz betiği
+├── data1.txt           # Ham/orijinal veri seti
+├── data2.txt           # 1. aykırı değer temizliği sonrası veri
+├── data3.txt           # 2. aykırı değer temizliği sonrası nihai veri
+└── README.md           # Proje dokümantasyonu
 ```
 
-## Analysis Steps
+## Gereksinimler
 
-1. **Data Preprocessing**
-   - Normality check
-   - Log and square root transformations
-   - Outlier detection and removal
+- R 4.0.0 veya üzeri
+- Aşağıdaki R paketleri:
 
-2. **Model Building**
-   - Multiple regression model setup
-   - Verification of model assumptions
-   - Calculation of confidence intervals
-
-3. **Model Validation**
-   - Residual analysis
-   - Cook's distance calculation
-   - VIF values check
-   - Autocorrelation testing
-
-4. **Variable Selection**
-   - Forward selection
-   - Backward selection
-   - Stepwise selection
-   - Ridge regression
-
-## Usage
-
-1. Place your dataset in the project's main directory
-2. Update the file path according to your system:
-```R
-data=read.table("your_path/your_file.txt", header = T)
+```r
+install.packages(c("car", "fBasics", "lmtest", "MASS", "nortest",
+                    "olsrr", "zoo", "fastDummies", "DAAG"))
 ```
-3. Run the code and analyze the results
+
+`stats` paketi R ile birlikte gelir, ayrıca kurulum gerektirmez.
+
+## Kurulum
+
+```bash
+git clone https://github.com/hakkik/Regresyon.git
+cd Regresyon
+```
+
+Betik veri dosyalarını sabit bir yoldan (`c:/data1.txt` vb.) okuyacak şekilde yazılmıştır. Kendi sisteminizde çalıştırmadan önce betik içindeki dosya yollarını, verilerin bulunduğu klasöre göre güncelleyin:
+
+```r
+data <- read.table("your_path/data1.txt", header = TRUE)
+```
+
+## Analiz Akışı
+
+Betik şu adımları sırasıyla uygular:
+
+1. **Betimsel istatistikler ve normallik testi**
+   - `basicStats()` ile özet istatistikler
+   - Q-Q grafiği, Shapiro-Wilk ve Kolmogorov-Smirnov testleri
+   - Normalliği sağlamak için log ve karekök dönüşümleri denenir
+
+2. **Aykırı değer temizliği (1. tur)**
+   - Boxplot ile aykırı gözlemler tespit edilir
+   - Aykırı gözlemler çıkarılarak `data2.txt` oluşturulur
+
+3. **İkinci normallik kontrolü ve model kurulumu**
+   - `data2.txt` üzerinde normallik yeniden test edilir
+   - Değişkenler arası doğrusallık `pairs()` ile incelenir
+   - `lm()` ile ilk regresyon modeli kurulur, güven aralıkları hesaplanır
+
+4. **Artık (residual) analizi**
+   - Hat (leverage) değerleri, standardize ve studentize artıklar
+   - Cook uzaklığı ile etkili gözlemlerin tespiti
+   - Bu adımda bulunan aykırı gözlemler çıkarılarak `data3.txt` oluşturulur
+
+5. **Nihai modelin kurulması (`data3.txt` ile)**
+   - Model yeniden kurulur ve özetlenir
+   - **Değişen varyans:** Breusch-Pagan testi
+   - **Otokorelasyon:** Durbin-Watson testi
+   - **Çoklu bağlantı:** VIF ve özdeğer/koşul indeksi analizi
+
+6. **Değişken seçimi ve Ridge regresyon**
+   - İleriye, geriye ve adımsal (stepwise) seçim yöntemleri
+   - Ridge regresyon ile katsayıların lambda değerine göre değişimi
+
+## Kullanım
+
+1. `data1.txt`, `data2.txt`, `data3.txt` dosyalarını proje klasörüne yerleştirin (veya betikteki yolları kendi verinize göre güncelleyin).
+2. `regresyon ödev.r` dosyasını R veya RStudio'da açın.
+3. Betiği bloklar halinde (adım adım) çalıştırın; her aşamada üretilen grafikleri ve test çıktılarını inceleyin.
+
+> Not: Betik bazı bölümlerde `Üretim`, `Kod`, `Test`, `Dizayn`, `Platform` gibi veri setinde tanımlı olmayan değişken adları içerir (değişken seçimi ve Ridge regresyon bölümleri). Bu satırları çalıştırmadan önce kendi veri setinizdeki sütun adlarıyla güncellemeniz gerekir.
+
+## Sonuçlar
+
+Analiz sonucunda:
+
+- Ham veride normallik varsayımı sağlanamamış, karekök dönüşümü ile iyileştirme yapılmıştır.
+- İki aşamalı aykırı değer temizliği sonrasında model varsayımları önemli ölçüde iyileşmiştir.
+- Değişken seçimi yöntemleri (ileri/geri/adımsal) ve Ridge regresyon ile en uygun model karşılaştırmalı olarak sunulmuştur.
+
+## Notlar
+
+- Bu proje bir ders ödevi (regresyon ödevi) kapsamında hazırlanmıştır.
+- Kod, öğretici/akademik amaçlıdır; üretim ortamı için doğrudan kullanılması önerilmez.
+- Dosya yolları Windows'a özgü (`c:/...`) yazıldığından macOS/Linux kullanıcılarının bu satırları güncellemesi gerekir.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# Regresyon: Multiple Regression Analysis on Agricultural Yield
+
+This project is a multiple linear regression study in R examining how light, temperature, water, and mineral levels affect agricultural yield. Built as a coursework assignment, it covers the full workflow: data cleaning, assumption checks, outlier analysis, model building, and variable selection.
+
+## Table of Contents
+
+- [About the Project](#about-the-project)
+- [File Structure](#file-structure)
+- [Requirements](#requirements)
+- [Setup](#setup)
+- [Analysis Workflow](#analysis-workflow)
+- [Usage](#usage)
+- [Results](#results)
+- [Notes](#notes)
+
+## About the Project
+
+Using `verim` (yield, the dependent variable) along with `isik` (light), `sicaklik` (temperature), `su` (water), and `mineraller` (minerals) as independent variables, a multiple regression model is built. Model assumptions (normality, linearity, homoscedasticity, autocorrelation, multicollinearity) are tested, and outliers are removed in two rounds to improve the model.
+
+## File Structure
+
+```
+├── regresyon ödev.r    # Main analysis script
+├── data1.txt           # Raw/original dataset
+├── data2.txt           # Dataset after 1st round of outlier removal
+├── data3.txt           # Dataset after 2nd round of outlier removal (final)
+└── README.md           # Project documentation
+```
 
 ## Requirements
 
 - R 4.0.0 or higher
-- All R packages listed above
-- Input data in txt format with headers
+- The following R packages:
 
-## Key Features
+```r
+install.packages(c("car", "fBasics", "lmtest", "MASS", "nortest",
+                    "olsrr", "zoo", "fastDummies", "DAAG"))
+```
 
-- Outlier cleaning process
-- Square root transformation for normality
-- AIC criterion for model selection
-- Comprehensive residual analysis
-- Multiple variable selection methods
+The `stats` package ships with R by default and requires no separate installation.
 
-## Important Notes
+## Setup
 
-- Dataset has been cleaned for outliers
-- Square root transformation was used for normality assumption
-- AIC criterion was used for model selection
-- VIF analysis included for multicollinearity check
+```bash
+git clone https://github.com/hakkik/Regresyon.git
+cd Regresyon
+```
+
+The script reads data files from hardcoded paths (e.g. `c:/data1.txt`). Before running it on your own system, update the file paths inside the script to match your data's location:
+
+```r
+data <- read.table("your_path/data1.txt", header = TRUE)
+```
+
+## Analysis Workflow
+
+The script follows these steps in order:
+
+1. **Descriptive statistics and normality testing**
+   - Summary statistics via `basicStats()`
+   - Q-Q plot, Shapiro-Wilk, and Kolmogorov-Smirnov tests
+   - Log and square-root transformations are tried to achieve normality
+
+2. **Outlier removal (round 1)**
+   - Outliers are detected using boxplots
+   - Outliers are removed, producing `data2.txt`
+
+3. **Second normality check and model building**
+   - Normality is retested on `data2.txt`
+   - Linearity between variables is examined with `pairs()`
+   - The first regression model is built via `lm()`, with confidence intervals computed
+
+4. **Residual analysis**
+   - Leverage values, standardized and studentized residuals
+   - Cook's distance to identify influential observations
+   - Outliers found at this stage are removed, producing `data3.txt`
+
+5. **Final model (using `data3.txt`)**
+   - The model is rebuilt and summarized
+   - **Heteroscedasticity:** Breusch-Pagan test
+   - **Autocorrelation:** Durbin-Watson test
+   - **Multicollinearity:** VIF and eigenvalue/condition index analysis
+
+6. **Variable selection and Ridge regression**
+   - Forward, backward, and stepwise selection methods
+   - Ridge regression showing how coefficients change with lambda
+
+## Usage
+
+1. Place `data1.txt`, `data2.txt`, and `data3.txt` in the project folder (or update the paths in the script to match your data).
+2. Open `regresyon ödev.r` in R or RStudio.
+3. Run the script block by block (step by step), reviewing the plots and test outputs produced at each stage.
+
+> Note: Some sections of the script (variable selection and Ridge regression) reference variable names such as `Üretim`, `Kod`, `Test`, `Dizayn`, and `Platform`, which are not defined in the dataset used elsewhere. You'll need to update these lines with the actual column names from your dataset before running them.
 
 ## Results
 
-The analysis provides:
-- Optimal model selection
-- Confidence intervals for parameters
-- Residual diagnostics
-- Prediction capabilities
-- Variable importance assessment
+Key findings from the analysis:
 
-## Contributing
+- The normality assumption was not satisfied on the raw data; a square-root transformation was used to improve it.
+- After two rounds of outlier removal, the model's assumptions improved significantly.
+- Variable selection methods (forward/backward/stepwise) and Ridge regression are compared to identify the best-fitting model.
 
-1. Fork the repository
-2. Create your feature branch
-3. Commit your changes
-4. Push to the branch
-5. Create a new Pull Request
+## Notes
 
-## Project Structure
-
-```
-├── regression_analysis.R    # Main analysis script
-├── data.txt                # Input data
-└── README.md              # Project documentation
-```
+- This project was prepared as part of a coursework assignment on regression analysis.
+- The code is intended for educational/academic purposes and is not recommended for direct production use.
+- File paths are Windows-specific (`c:/...`), so macOS/Linux users will need to update these lines.
