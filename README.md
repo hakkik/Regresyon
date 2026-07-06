@@ -1,114 +1,3 @@
-# Regresyon: Tarımsal Verim Üzerine Çoklu Regresyon Analizi
-
-Bu proje, ışık, sıcaklık, su ve mineral seviyelerinin tarımsal verim üzerindeki etkisini incelemek için R dilinde yapılmış bir çoklu doğrusal regresyon çalışmasıdır. Proje kapsamında; veri temizleme, varsayım kontrolleri, aykırı değer analizi, model kurma ve değişken seçimi adımlarını uçtan uca içerir.
-
-## İçindekiler
-
-- [Proje Hakkında](#proje-hakkında)
-- [Dosya Yapısı](#dosya-yapısı)
-- [Gereksinimler](#gereksinimler)
-- [Kurulum](#kurulum)
-- [Analiz Akışı](#analiz-akışı)
-- [Kullanım](#kullanım)
-- [Sonuçlar](#sonuçlar)
-- [Notlar](#notlar)
-
-## Proje Hakkında
-
-Veri setinde yer alan `verim` (bağımlı değişken), `isik`, `sicaklik`, `su` ve `mineraller` (bağımsız değişkenler) kullanılarak bir çoklu regresyon modeli kurulmuş; model varsayımları (normallik, doğrusallık, sabit varyans, otokorelasyon, çoklu bağlantı) test edilmiş ve aykırı gözlemler iki aşamada temizlenerek model iyileştirilmiştir.
-
-## Dosya Yapısı
-
-```
-├── regresyon ödev.r    # Ana analiz betiği
-├── data1.txt           # Ham/orijinal veri seti
-├── data2.txt           # 1. aykırı değer temizliği sonrası veri
-├── data3.txt           # 2. aykırı değer temizliği sonrası nihai veri
-└── README.md           # Proje dokümantasyonu
-```
-
-## Gereksinimler
-
-- R 4.0.0 veya üzeri
-- Aşağıdaki R paketleri:
-
-```r
-install.packages(c("car", "fBasics", "lmtest", "MASS", "nortest",
-                    "olsrr", "zoo", "fastDummies", "DAAG"))
-```
-
-`stats` paketi R ile birlikte gelir, ayrıca kurulum gerektirmez.
-
-## Kurulum
-
-```bash
-git clone https://github.com/hakkik/Regresyon.git
-cd Regresyon
-```
-
-Betik veri dosyalarını sabit bir yoldan (`c:/data1.txt` vb.) okuyacak şekilde yazılmıştır. Kendi sisteminizde çalıştırmadan önce betik içindeki dosya yollarını, verilerin bulunduğu klasöre göre güncelleyin:
-
-```r
-data <- read.table("your_path/data1.txt", header = TRUE)
-```
-
-## Analiz Akışı
-
-Betik şu adımları sırasıyla uygular:
-
-1. **Betimsel istatistikler ve normallik testi**
-   - `basicStats()` ile özet istatistikler
-   - Q-Q grafiği, Shapiro-Wilk ve Kolmogorov-Smirnov testleri
-   - Normalliği sağlamak için log ve karekök dönüşümleri denenir
-
-2. **Aykırı değer temizliği (1. tur)**
-   - Boxplot ile aykırı gözlemler tespit edilir
-   - Aykırı gözlemler çıkarılarak `data2.txt` oluşturulur
-
-3. **İkinci normallik kontrolü ve model kurulumu**
-   - `data2.txt` üzerinde normallik yeniden test edilir
-   - Değişkenler arası doğrusallık `pairs()` ile incelenir
-   - `lm()` ile ilk regresyon modeli kurulur, güven aralıkları hesaplanır
-
-4. **Artık (residual) analizi**
-   - Hat (leverage) değerleri, standardize ve studentize artıklar
-   - Cook uzaklığı ile etkili gözlemlerin tespiti
-   - Bu adımda bulunan aykırı gözlemler çıkarılarak `data3.txt` oluşturulur
-
-5. **Nihai modelin kurulması (`data3.txt` ile)**
-   - Model yeniden kurulur ve özetlenir
-   - **Değişen varyans:** Breusch-Pagan testi
-   - **Otokorelasyon:** Durbin-Watson testi
-   - **Çoklu bağlantı:** VIF ve özdeğer/koşul indeksi analizi
-
-6. **Değişken seçimi ve Ridge regresyon**
-   - İleriye, geriye ve adımsal (stepwise) seçim yöntemleri
-   - Ridge regresyon ile katsayıların lambda değerine göre değişimi
-
-## Kullanım
-
-1. `data1.txt`, `data2.txt`, `data3.txt` dosyalarını proje klasörüne yerleştirin (veya betikteki yolları kendi verinize göre güncelleyin).
-2. `regresyon ödev.r` dosyasını R veya RStudio'da açın.
-3. Betiği bloklar halinde (adım adım) çalıştırın; her aşamada üretilen grafikleri ve test çıktılarını inceleyin.
-
-> Not: Betik bazı bölümlerde `Üretim`, `Kod`, `Test`, `Dizayn`, `Platform` gibi veri setinde tanımlı olmayan değişken adları içerir (değişken seçimi ve Ridge regresyon bölümleri). Bu satırları çalıştırmadan önce kendi veri setinizdeki sütun adlarıyla güncellemeniz gerekir.
-
-## Sonuçlar
-
-Analiz sonucunda:
-
-- Ham veride normallik varsayımı sağlanamamış, karekök dönüşümü ile iyileştirme yapılmıştır.
-- İki aşamalı aykırı değer temizliği sonrasında model varsayımları önemli ölçüde iyileşmiştir.
-- Değişken seçimi yöntemleri (ileri/geri/adımsal) ve Ridge regresyon ile en uygun model karşılaştırmalı olarak sunulmuştur.
-
-## Notlar
-
-- Bu proje bir ders ödevi (regresyon ödevi) kapsamında hazırlanmıştır.
-- Kod, öğretici/akademik amaçlıdır; üretim ortamı için doğrudan kullanılması önerilmez.
-- Dosya yolları Windows'a özgü (`c:/...`) yazıldığından macOS/Linux kullanıcılarının bu satırları güncellemesi gerekir.
-
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 # Regresyon: Multiple Regression Analysis on Agricultural Yield
 
 This project is a multiple linear regression study in R examining how light, temperature, water, and mineral levels affect agricultural yield. It covers the full workflow: data cleaning, assumption checks, outlier analysis, model building, and variable selection.
@@ -217,3 +106,114 @@ Key findings from the analysis:
 - This project was prepared as a regression analysis project.
 - The code is intended for educational/academic purposes and is not recommended for direct production use.
 - File paths are Windows-specific (`c:/...`), so macOS/Linux users will need to update these lines.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# Regresyon: Tarımsal Verim Üzerine Çoklu Regresyon Analizi
+
+Bu proje, ışık, sıcaklık, su ve mineral seviyelerinin tarımsal verim üzerindeki etkisini incelemek için R dilinde yapılmış bir çoklu doğrusal regresyon çalışmasıdır. Proje kapsamında; veri temizleme, varsayım kontrolleri, aykırı değer analizi, model kurma ve değişken seçimi adımlarını uçtan uca içerir.
+
+## İçindekiler
+
+- [Proje Hakkında](#proje-hakkında)
+- [Dosya Yapısı](#dosya-yapısı)
+- [Gereksinimler](#gereksinimler)
+- [Kurulum](#kurulum)
+- [Analiz Akışı](#analiz-akışı)
+- [Kullanım](#kullanım)
+- [Sonuçlar](#sonuçlar)
+- [Notlar](#notlar)
+
+## Proje Hakkında
+
+Veri setinde yer alan `verim` (bağımlı değişken), `isik`, `sicaklik`, `su` ve `mineraller` (bağımsız değişkenler) kullanılarak bir çoklu regresyon modeli kurulmuş; model varsayımları (normallik, doğrusallık, sabit varyans, otokorelasyon, çoklu bağlantı) test edilmiş ve aykırı gözlemler iki aşamada temizlenerek model iyileştirilmiştir.
+
+## Dosya Yapısı
+
+```
+├── regresyon ödev.r    # Ana analiz betiği
+├── data1.txt           # Ham/orijinal veri seti
+├── data2.txt           # 1. aykırı değer temizliği sonrası veri
+├── data3.txt           # 2. aykırı değer temizliği sonrası nihai veri
+└── README.md           # Proje dokümantasyonu
+```
+
+## Gereksinimler
+
+- R 4.0.0 veya üzeri
+- Aşağıdaki R paketleri:
+
+```r
+install.packages(c("car", "fBasics", "lmtest", "MASS", "nortest",
+                    "olsrr", "zoo", "fastDummies", "DAAG"))
+```
+
+`stats` paketi R ile birlikte gelir, ayrıca kurulum gerektirmez.
+
+## Kurulum
+
+```bash
+git clone https://github.com/hakkik/Regresyon.git
+cd Regresyon
+```
+
+Betik veri dosyalarını sabit bir yoldan (`c:/data1.txt` vb.) okuyacak şekilde yazılmıştır. Kendi sisteminizde çalıştırmadan önce betik içindeki dosya yollarını, verilerin bulunduğu klasöre göre güncelleyin:
+
+```r
+data <- read.table("your_path/data1.txt", header = TRUE)
+```
+
+## Analiz Akışı
+
+Betik şu adımları sırasıyla uygular:
+
+1. **Betimsel istatistikler ve normallik testi**
+   - `basicStats()` ile özet istatistikler
+   - Q-Q grafiği, Shapiro-Wilk ve Kolmogorov-Smirnov testleri
+   - Normalliği sağlamak için log ve karekök dönüşümleri denenir
+
+2. **Aykırı değer temizliği (1. tur)**
+   - Boxplot ile aykırı gözlemler tespit edilir
+   - Aykırı gözlemler çıkarılarak `data2.txt` oluşturulur
+
+3. **İkinci normallik kontrolü ve model kurulumu**
+   - `data2.txt` üzerinde normallik yeniden test edilir
+   - Değişkenler arası doğrusallık `pairs()` ile incelenir
+   - `lm()` ile ilk regresyon modeli kurulur, güven aralıkları hesaplanır
+
+4. **Artık (residual) analizi**
+   - Hat (leverage) değerleri, standardize ve studentize artıklar
+   - Cook uzaklığı ile etkili gözlemlerin tespiti
+   - Bu adımda bulunan aykırı gözlemler çıkarılarak `data3.txt` oluşturulur
+
+5. **Nihai modelin kurulması (`data3.txt` ile)**
+   - Model yeniden kurulur ve özetlenir
+   - **Değişen varyans:** Breusch-Pagan testi
+   - **Otokorelasyon:** Durbin-Watson testi
+   - **Çoklu bağlantı:** VIF ve özdeğer/koşul indeksi analizi
+
+6. **Değişken seçimi ve Ridge regresyon**
+   - İleriye, geriye ve adımsal (stepwise) seçim yöntemleri
+   - Ridge regresyon ile katsayıların lambda değerine göre değişimi
+
+## Kullanım
+
+1. `data1.txt`, `data2.txt`, `data3.txt` dosyalarını proje klasörüne yerleştirin (veya betikteki yolları kendi verinize göre güncelleyin).
+2. `regresyon ödev.r` dosyasını R veya RStudio'da açın.
+3. Betiği bloklar halinde (adım adım) çalıştırın; her aşamada üretilen grafikleri ve test çıktılarını inceleyin.
+
+> Not: Betik bazı bölümlerde `Üretim`, `Kod`, `Test`, `Dizayn`, `Platform` gibi veri setinde tanımlı olmayan değişken adları içerir (değişken seçimi ve Ridge regresyon bölümleri). Bu satırları çalıştırmadan önce kendi veri setinizdeki sütun adlarıyla güncellemeniz gerekir.
+
+## Sonuçlar
+
+Analiz sonucunda:
+
+- Ham veride normallik varsayımı sağlanamamış, karekök dönüşümü ile iyileştirme yapılmıştır.
+- İki aşamalı aykırı değer temizliği sonrasında model varsayımları önemli ölçüde iyileşmiştir.
+- Değişken seçimi yöntemleri (ileri/geri/adımsal) ve Ridge regresyon ile en uygun model karşılaştırmalı olarak sunulmuştur.
+
+## Notlar
+
+- Bu proje bir ders ödevi (regresyon ödevi) kapsamında hazırlanmıştır.
+- Kod, öğretici/akademik amaçlıdır; üretim ortamı için doğrudan kullanılması önerilmez.
+- Dosya yolları Windows'a özgü (`c:/...`) yazıldığından macOS/Linux kullanıcılarının bu satırları güncellemesi gerekir.
