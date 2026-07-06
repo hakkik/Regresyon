@@ -111,7 +111,7 @@ Analiz sonucunda:
 
 # Regresyon: Multiple Regression Analysis on Agricultural Yield
 
-This project is a multiple linear regression study in R examining how light, temperature, water, and mineral levels affect agricultural yield. Built as a coursework assignment, it covers the full workflow: data cleaning, assumption checks, outlier analysis, model building, and variable selection.
+This project is a multiple linear regression study in R examining how light, temperature, water, and mineral levels affect agricultural yield. It covers the full workflow: data cleaning, assumption checks, outlier analysis, model building, and variable selection.
 
 ## Table of Contents
 
@@ -214,6 +214,6 @@ Key findings from the analysis:
 
 ## Notes
 
-- This project was prepared as part of a coursework assignment on regression analysis.
+- This project was prepared as a regression analysis project.
 - The code is intended for educational/academic purposes and is not recommended for direct production use.
 - File paths are Windows-specific (`c:/...`), so macOS/Linux users will need to update these lines.
