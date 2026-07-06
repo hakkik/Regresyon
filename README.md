@@ -217,5 +217,3 @@ Analiz sonucunda:
 - Bu proje bir ders ödevi (regresyon ödevi) kapsamında hazırlanmıştır.
 - Kod, öğretici/akademik amaçlıdır; üretim ortamı için doğrudan kullanılması önerilmez.
 - Dosya yolları Windows'a özgü (`c:/...`) yazıldığından macOS/Linux kullanıcılarının bu satırları güncellemesi gerekir.
-
-[Hakkı kondak](https://github.com/hakkik)
