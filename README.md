@@ -93,6 +93,51 @@ The script follows these steps in order:
 
 > Note: Some sections of the script (variable selection and Ridge regression) reference variable names such as `Üretim`, `Kod`, `Test`, `Dizayn`, and `Platform`, which are not defined in the dataset used elsewhere. You'll need to update these lines with the actual column names from your dataset before running them.
 
+## Python Version
+
+The R workflow has also been ported to Python in `regression_analysis.py`.
+
+Install the Python dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+Run the analysis:
+
+```bash
+python regression_analysis.py
+```
+
+The Python script reads `data1.txt` from the project folder, reproduces the two outlier-removal rounds, fits the OLS models, runs assumption checks, performs AIC-based variable selection, and runs Ridge regression. It writes:
+
+```text
+data2_python.txt
+data3_python.txt
+plots/
+```
+
+`data2_python.txt` and `data3_python.txt` contain the same numeric rows as the R-generated `data2.txt` and `data3.txt`; the only formatting difference is that R writes quoted column names while the Python script writes plain column names.
+
+The `plots/` folder contains Python equivalents of the R visualizations: Q-Q plots for raw/log/square-root yield transformations, the yield boxplot with outlier labels, pair plots, leverage, standardized residual, studentized residual, Cook's distance, fitted-vs-studentized-residual plots, and Ridge coefficient paths.
+
+### Main R vs Python Differences
+
+| Step | R | Python |
+| --- | --- | --- |
+| Data loading | `read.table()` | `pandas.read_csv(sep=r"\s+")` |
+| Descriptive statistics | `fBasics::basicStats()` | `pandas.DataFrame.describe()` |
+| Normality tests | `shapiro.test()`, `ks.test()` | `scipy.stats.shapiro()`, `scipy.stats.kstest()` |
+| OLS regression | `lm()` | `statsmodels.formula.api.ols()` |
+| Categorical variable | `as.factor(mineraller)` | `C(mineraller)` in the formula |
+| Influence diagnostics | `ls.diag()`, `influence.measures()` | `model.get_influence().summary_frame()` |
+| Breusch-Pagan | `lmtest::bptest()` | `statsmodels.stats.diagnostic.het_breuschpagan()` |
+| Durbin-Watson | `lmtest::dwtest()` | `statsmodels.stats.stattools.durbin_watson()` |
+| VIF | `car::vif()` / `olsrr` | `statsmodels.stats.outliers_influence.variance_inflation_factor()` |
+| Ridge | `MASS::lm.ridge()` | `sklearn.linear_model.Ridge` |
+
+The Python version also fixes two practical issues in the original R script: it uses relative file paths instead of hardcoded `c:/...` paths, and it rewrites the variable-selection/Ridge sections with the actual dataset columns (`verim`, `isik`, `sicaklik`, `su`, `mineraller`) instead of undefined names such as `Üretim`, `Kod`, `Test`, `Dizayn`, and `Platform`.
+
 ## Results
 
 Key findings from the analysis:
@@ -203,6 +248,51 @@ Betik şu adımları sırasıyla uygular:
 3. Betiği bloklar halinde (adım adım) çalıştırın; her aşamada üretilen grafikleri ve test çıktılarını inceleyin.
 
 > Not: Betik bazı bölümlerde `Üretim`, `Kod`, `Test`, `Dizayn`, `Platform` gibi veri setinde tanımlı olmayan değişken adları içerir (değişken seçimi ve Ridge regresyon bölümleri). Bu satırları çalıştırmadan önce kendi veri setinizdeki sütun adlarıyla güncellemeniz gerekir.
+
+## Python Sürümü
+
+R iş akışı `regression_analysis.py` dosyasıyla Python'a da taşınmıştır.
+
+Python bağımlılıklarını kurmak için:
+
+```bash
+pip install -r requirements.txt
+```
+
+Analizi çalıştırmak için:
+
+```bash
+python regression_analysis.py
+```
+
+Python betiği proje klasöründeki `data1.txt` dosyasını okur; iki aşamalı aykırı değer temizliğini, OLS modellemeyi, varsayım testlerini, AIC tabanlı değişken seçimini ve Ridge regresyonu uygular. Çalışınca şu çıktıları üretir:
+
+```text
+data2_python.txt
+data3_python.txt
+plots/
+```
+
+`data2_python.txt` ve `data3_python.txt`, R ile üretilen `data2.txt` ve `data3.txt` dosyalarıyla aynı sayısal satırlara sahiptir. Tek fark yazım biçimindedir: R sütun adlarını tırnaklı, Python ise tırnaksız yazar.
+
+`plots/` klasörü R'deki görselleştirmelerin Python karşılıklarını içerir: ham/log/karekök dönüşümlü verim Q-Q grafikleri, aykırı değer etiketli verim boxplot grafiği, değişkenler arası pair plot, leverage, standardize artık, studentize artık, Cook uzaklığı, tahmin-studentize artık grafiği ve Ridge katsayı yolları.
+
+### Temel R ve Python Farkları
+
+| Adım | R | Python |
+| --- | --- | --- |
+| Veri okuma | `read.table()` | `pandas.read_csv(sep=r"\s+")` |
+| Betimsel istatistikler | `fBasics::basicStats()` | `pandas.DataFrame.describe()` |
+| Normallik testleri | `shapiro.test()`, `ks.test()` | `scipy.stats.shapiro()`, `scipy.stats.kstest()` |
+| OLS regresyon | `lm()` | `statsmodels.formula.api.ols()` |
+| Kategorik değişken | `as.factor(mineraller)` | Formülde `C(mineraller)` |
+| Etki/aykırı gözlem tanıları | `ls.diag()`, `influence.measures()` | `model.get_influence().summary_frame()` |
+| Breusch-Pagan | `lmtest::bptest()` | `statsmodels.stats.diagnostic.het_breuschpagan()` |
+| Durbin-Watson | `lmtest::dwtest()` | `statsmodels.stats.stattools.durbin_watson()` |
+| VIF | `car::vif()` / `olsrr` | `statsmodels.stats.outliers_influence.variance_inflation_factor()` |
+| Ridge | `MASS::lm.ridge()` | `sklearn.linear_model.Ridge` |
+
+Python sürümü ayrıca özgün R betiğindeki iki pratik sorunu giderir: `c:/...` gibi sabit yollar yerine proje içi göreli yolları kullanır ve değişken seçimi/Ridge bölümlerini veri setindeki gerçek sütun adlarıyla (`verim`, `isik`, `sicaklik`, `su`, `mineraller`) çalışacak şekilde düzenler.
 
 ## Sonuçlar
 
